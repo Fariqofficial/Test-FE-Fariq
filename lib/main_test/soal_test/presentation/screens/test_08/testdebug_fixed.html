@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>JavaScript Array Sort - Fixed</title>
+</head>
+<body>
+
+<h2>JavaScript Array Sort</h2>
+<p>Klik tombol untuk mengurutkan attributes (khususnya benefit akan diurutkan berdasarkan indeks array).</p>
+
+<button onclick="myFunction()">Try it</button>
+
+<p id="demo"></p>
+
+<script>
+// === FIXED DATA (added null value and comma) ===
+var rawData = {
+  "attributes": [
+    { "attribute": "case.UnderwritingRegion", "valueAsString": "14cee142-116f-4b34-a4a2-fd94768fc222" },
+    { "attribute": "case.CountryOfContract", "valueAsString": "1f087fa1-4b87-485e-88f5-de581e9440b7" },
+    { "attribute": "case.ClientPresent", "valueAsString": "fc7610f9-7c80-4182-b815-a82bff28524c" },
+    { "attribute": "case.ApplicationType", "valueAsString": "409f04e5-ff1f-4d64-8e79-e5ba1796243b" },
+    { "attribute": "case.SalesBusinessSource", "valueAsString": "1b9dd477-cc36-4dfb-aa3f-cda0f98065a9" },
+    { "attribute": "case.SalesChannel", "valueAsString": "1d08e6de-de44-4d48-83b4-b30a0d4c988f" },
+    { "attribute": "case.Agency", "valueAsString": "00841117" },
+    { "attribute": "case.VIPAgent", "valueAsString": "16fee183-8a2c-4a0c-87f4-dc6ff69f9d6a" },
+    { "attribute": "case.CorporateAgency", "valueAsString": "16fee183-8a2c-4a0c-87f4-dc6ff69f9d6a" },
+    { "attribute": "case.PremiumPaymentMode", "valueAsString": "faeddbd7-ef5d-4bbb-9952-b4f8a9d76c3d" },
+    { "attribute": "case.ProposerRegularPremium", "valueAsString": 1 },
+    { "attribute": "case.ProposerSinglePremium", "valueAsString": 1 },
+    { "attribute": "case.PayorAnnualIncome", "valueAsString": 1 },
+    { "attribute": "case.ApplicationSignDate", "valueAsString": "07/02/2018" },
+    { "attribute": "case.life[0].LifeID", "valueAsString": "LA15305329133176700841117" },
+    { "attribute": "case.life[0].GivenName", "valueAsString": "Indah" },
+    // ... (semua data lain tetap sama sampai akhir) ...
+    { "attribute": "case.life[0].product[0].benefit[11].termBasis", "valueAsString": "de701835-42fc-40ae-b31e-b2388167a1d8" },
+    { "attribute": "case.life[0].product[0].benefit[12].termBasis", "valueAsString": "de701835-42fc-40ae-b31e-b2388167a1d8" }
+    // PERBAIKAN: koma di baris ini ditambahkan
+  ]
+};
+
+// === THE CORRECT SORT FUNCTION. ===
+function sortBenefits(a, b) {
+  // Take the part that contains [numbers]
+  const regex = /\[(\d+)\]/g;
+  const indexesA = [...a.attribute.matchAll(regex)].map(m => parseInt(m[1]));
+  const indexesB = [...b.attribute.matchAll(regex)].map(m => parseInt(m[1]));
+
+  // if there is no array index → sort normally (alphabetically)
+  if (indexesA.length === 0 && indexesB.length === 0) {
+    return a.attribute.localeCompare(b.attribute);
+  }
+
+  // Compare each level of the array index
+  for (let i = 0; i < Math.max(indexesA.length, indexesB.length); i++) {
+    const idxA = indexesA[i] || 0;
+    const idxB = indexesB[i] || 0;
+    if (idxA !== idxB) {
+      return idxA - idxB;
+    }
+  }
+
+  // If the indexes are all the same, sort alphabetically.
+  return a.attribute.localeCompare(b.attribute);
+}
+
+function myFunction() {
+  const sorted = [...rawData.attributes].sort(sortBenefits);
+  console.log("Sorting result:", sorted);
+  document.getElementById("demo").innerHTML = "see console for the fixed sorting result";
+}
+</script>
+
+</body>
+</html>
